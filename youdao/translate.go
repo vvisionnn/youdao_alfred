@@ -2,6 +2,7 @@ package youdao
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -19,6 +20,12 @@ const (
 		"4780646068"
 	youdaoUrl = "http://fanyi.youdao.com/translate_o?smartresult=dict&smartresult=rule"
 )
+
+type response struct {
+	TranslateResult [][]map[string]string `json:"translateResult"`
+	ErrorCode       int                   `json:"errorCode"`
+	Type            string                `json:"type"`
+}
 
 func GetTime() string {
 	return strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
@@ -73,5 +80,10 @@ func Translate(key string) string {
 		log.Println(err)
 	}
 
-	return resp
+	d := response{}
+	if err := json.Unmarshal([]byte(resp), &d); err != nil {
+		log.Println(err)
+	}
+
+	return d.TranslateResult[0][0]["tgt"]
 }

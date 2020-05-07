@@ -1,10 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"flag"
+
+	"youdao_alfred/alfred"
 	"youdao_alfred/youdao"
 )
 
 func main() {
-	fmt.Println(youdao.Translate("Не уверен, что это он"))
+
+	key := flag.String("k", "Hello World", "the sentence you want to translate")
+	flag.Parse()
+
+	result := alfred.NewResult()
+
+	dst := youdao.Translate(*key)
+	result.Append(alfred.NewItem(dst, "test subtitle", dst))
+
+	result.End()
 }
